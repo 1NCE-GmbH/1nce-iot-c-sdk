@@ -77,27 +77,32 @@
  * @brief diagnostic information to be written to the standard error file.
  *
  */
-#define configASSERT         assert
+#define configASSERT            assert
 
 /**
  * @brief Size of buffer to keep received data.
  */
-#define RECV_BUFFER_LEN      ( 1500U )
+#define RECV_BUFFER_LEN         ( 1500U )
 
 /**
  * @brief Size of buffer to keep local strings.
  */
-#define MAX_LOCAL_STR_LEN    ( 100U )
+#define MAX_LOCAL_STR_LEN       ( 100U )
 
 /**
  * @brief Size of buffer to keep certificate.
  */
-#define MAX_CERT_LEN         ( 2000U )
+#define MAX_CERT_LEN            ( 2000U )
 
 /**
  * @brief Size of buffer to keep key.
  */
-#define MAX_KEY_LEN          ( 3000U )
+#define MAX_KEY_LEN             ( 3000U )
+
+/**
+ * @brief Size of the range request from 1nce onboarding service.
+ */
+#define democonfigRANGE_SIZE    ( 1000U )
 
 /*-----------------------------------------------------------*/
 

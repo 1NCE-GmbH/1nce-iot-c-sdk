@@ -90,6 +90,57 @@ static uint8_t nceReinitConnParams( char * completeResponse );
 static uint8_t nceReinitDtlsParams( char * completeResponse );
 
 /*-----------------------------------------------------------*/
+#ifdef democonfigRANGE_SIZE
+
+/**
+ * @brief The total byte length of the original response.
+ *
+ * @param[in] buffer: A buffer to save received data (response header).
+ *
+ * @return the total byte of the original response.
+ */
+
+    static int responseLength( char * buffer );
+/*-----------------------------------------------------------*/
+
+/**
+ * @brief request the onboarding service helper function to reduce the complexity.
+ *
+ * @param[in] status: The status of previous operations.
+ *
+ * @param[in] xtls_api: TLS interface object.
+ *
+ * @param[in] completeResponse: A buffer to collect complete onboarding response.
+ *
+ * @param[in] recvBytes: Number of bytes to receive from the network.
+ *
+ * @return The status of the onboarding request.
+ */
+
+    static uint8_t onboardingRequestHelp( uint8_t status,
+                                          tls_api * xtls_api,
+                                          char * completeResponse,
+                                          int32_t recvBytes );
+/*-----------------------------------------------------------*/
+
+/**
+ * @brief request the onboarding service with a range defined in nce_sdk.h.
+ *
+ * @param[in] status: The status of previous operations.
+ *
+ * @param[in] xtls_api: TLS interface object.
+ *
+ * @param[in] completeResponse: A buffer to collect complete onboarding response.
+ *
+ *
+ * @return The status of the onboarding request.
+ */
+    static uint8_t onboardingRequest( uint8_t status,
+                                      tls_api * xtls_api,
+                                      char * completeResponse );
+#endif /* ifdef democonfigRANGE_SIZE */
+/*-----------------------------------------------------------*/
+
 
 static char * str_replace( char * orig,
                            char * rep,
@@ -337,6 +388,136 @@ static uint8_t nceReinitDtlsParams( char * completeResponse )
 
 /*-----------------------------------------------------------*/
 
+#ifdef democonfigRANGE_SIZE
+    static int responseLength( char * buffer )
+    {
+        char * pch = strstr( buffer, "bytes" );
+
+        int rangeStart, rangeEnd, rangeOriginalSize;
+
+        if( 3 == sscanf( pch,
+                         "%*[^0123456789]%d%*[^0123456789]%d%*[^0123456789]%d",
+                         &rangeStart,
+                         &rangeEnd,
+                         &rangeOriginalSize ) )
+        {
+            LogDebug( ( "The size of the onboarding response is: %d\r\n",
+                        rangeOriginalSize ) );
+            return rangeOriginalSize;
+        }
+        else
+        {
+            return EXIT_FAILURE;
+        }
+    }
+
+/*-----------------------------------------------------------*/
+
+    static uint8_t onboardingRequestHelp( uint8_t status,
+                                          tls_api * xtls_api,
+                                          char * completeResponse,
+                                          int32_t recvBytes )
+    {
+        strcat( completeResponse,
+                strstr( part, "Express\r\n\r\n" ) + strlen( "Express\r\n\r\n" ) );
+        memset( part, ( int8_t ) '\0', sizeof( part ) );
+
+        while( recvBytes == RECV_BUFFER_LEN )
+        {
+            recvBytes = xtls_api->tlsrecv( xtls_api->pNetworkContext,
+                                           &part[ 0 ],
+                                           RECV_BUFFER_LEN );
+
+            if( recvBytes < 0 )
+            {
+                LogError( ( "Failed to receive onboarding response." ) );
+                status = EXIT_FAILURE;
+                return status;
+            }
+
+            LogDebug( ( "Received raw response: %d bytes.", strlen( part ) ) );
+            LogDebug( ( "\r\n%.*s", strlen( part ), part ) );
+            strcat( completeResponse, part );
+            memset( part, ( int8_t ) '\0', sizeof( part ) );
+        }
+
+        return status;
+    }
+/*-----------------------------------------------------------*/
+
+    static uint8_t onboardingRequest( uint8_t status,
+                                      tls_api * xtls_api,
+                                      char * completeResponse )
+    {
+        char packetToSent[ 130 ];
+        int rangeStart = 0;
+        int rangeEnd = democonfigRANGE_SIZE;
+        int rangeOriginalSize;
+
+        memset( packetToSent, '\0', 130 * sizeof( char ) );
+
+        do
+        {
+            sprintf( packetToSent, "GET /device-api/onboarding HTTP/1.1\r\n"
+                                   "Host: %s\r\n"
+                                   "Range: bytes=%d-%d\r\n"
+                                   "Accept: text/csv\r\n\r\n", ONBOARDING_ENDPOINT, rangeStart, rangeEnd );
+            LogInfo( ( "Send onboarding request:\r\n%.*s",
+                       strlen( packetToSent ),
+                       packetToSent ) );
+
+            /* Send onboarding request. */
+            int32_t sentBytes = xtls_api->tlssend( xtls_api->pNetworkContext,
+                                                   &packetToSent,
+                                                   strlen( packetToSent ) );
+
+            configASSERT( sentBytes > 0 );
+
+            if( sentBytes <= 0 )
+            {
+                LogError( ( "Failed to send onboarding request." ) );
+                return status;
+            }
+
+            /* Receive onboarding response. */
+            int32_t recvBytes = xtls_api->tlsrecv( xtls_api->pNetworkContext,
+                                                   &part[ 0 ],
+                                                   RECV_BUFFER_LEN );
+
+            if( rangeEnd == democonfigRANGE_SIZE )
+            {
+                rangeOriginalSize = responseLength( part );
+
+                if( rangeOriginalSize == EXIT_FAILURE )
+                {
+                    LogError( ( "Failed to get complete onboarding response size." ) );
+                    return status;
+                }
+            }
+
+            if( recvBytes < 0 )
+            {
+                LogError( ( "Failed to receive onboarding response." ) );
+                return status;
+            }
+
+            LogDebug( ( "Received raw response: %d bytes.", recvBytes ) );
+            LogDebug( ( "\r\n%.*s", recvBytes, part ) );
+            status = onboardingRequestHelp( status, xtls_api, completeResponse, recvBytes );
+            rangeStart = rangeEnd + 1;
+            rangeEnd += democonfigRANGE_SIZE;
+        } while( rangeStart < rangeOriginalSize );
+
+        LogInfo( ( " Onboarding response is received." ) );
+        /* Disconnect onboarding TLS connection. */
+        xtls_api->disconn( xtls_api->pNetworkContext );
+        status = EXIT_SUCCESS;
+        return status;
+    }
+#endif /* ifdef democonfigRANGE_SIZE */
+
+/*-----------------------------------------------------------*/
+
 TlsTransportStatus_t nce_connect( tls_api * xtls_api )
 {
     TlsTransportStatus_t xNetworkStatus = TLS_TRANSPORT_CONNECT_FAILURE;
@@ -539,7 +720,11 @@ uint8_t nce_sdk( tls_api * xtls_api,
         return status;
     }
 
-    status = nce_onboard( xtls_api, completeResponse, mqtt );
+    #ifndef democonfigRANGE_SIZE
+        status = nce_onboard( xtls_api, completeResponse, mqtt );
+    #else
+        status = onboardingRequest( status, xtls_api, completeResponse );
+    #endif
 
     if( status == EXIT_FAILURE )
     {

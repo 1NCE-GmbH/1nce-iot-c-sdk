@@ -1,0 +1,153 @@
+/**
+ * @page Integration_Guide Integration Guide
+ * @brief Guide for integration 1NCE IoT C SDK to a new platform.
+ * <p>
+ * You can also develop C Application using the SDK to connect with AWS with zero touch provisioning, use Translation Service and other features offered by 1NCE Connectivity Suite.
+ * @section Getting_started Getting started
+ * @brief This page shows you:
+ * <ul>
+ * <li>How to get certificate using 1nce onboarding end point.</li>
+ * <li>How to process the certificate to make it usable for AWS services.</li>
+ * <li>How to get the identity and pre-shared key using 1nce onboarding end point. (for CoAP application).</li>
+ * <li>How to use 1NCE Translation Service to reduce the data (and/ or Energy) consumption.</li>
+ * </ul>  
+ *
+ *
+ * @section scenario The scenario
+ * @brief The Example shows how to set up and integrate 1nce SDK in Embedded Application written in C.
+ *
+ * <p>
+ * This Example includes two cases:
+ * <ul>
+ * <li>Offload certificates.</li>
+ * <li>Unload certificates.</li>
+ * </ul>  
+ * The Examples used FreeRTOS in the first version.
+ * </p>
+ *
+ *
+ * @section Prerequisite Prerequisite Tasks
+ * @brief To set up and run the SDK you must first complete these tasks:
+ *
+ * <p>
+ * <ul>
+ * <li>Install gcc to compile the project. For more information, see the <a href="https://gcc.gnu.org/install/index.html">link</a> </li>
+ * </ul>
+ * </p>
+ *
+ * @section Contents
+ * @brief The steps is follow:
+ *
+ * <p>
+ * <ul>
+ * <li>Step1: Clone Repository.</li>
+ * <li>Step2: Implement abstract functions</li>
+ * <li>Step3: Integrate SDK in your Application</li>
+ * <li>Step4: Run your Application</li>
+ * </ul>  
+ * </p>
+ *
+ * @section Step1 Step1: Clone Repository
+ * @brief you clone the SDK for Embedded C in your project using git clone To clone using HTTPS
+ * @code{command}
+    git clone https://github.com/1NCE-GmbH/1nce-sdk.git --recurse-submodules
+ * @endcode 
+ * 
+ * 
+ * <p>
+ * with SSH
+ * </p>
+ * @code{command}
+    git clone git@github.com:1NCE-GmbH/1nce-sdk.git --recurse-submodules
+ * @endcode 
+ * 
+ * <p>
+ * If you have downloaded the repo without using the --recurse-submodules argument, you need to run:
+ * </p>
+  * @code{command}
+    git submodule update --init --recursive
+ * @endcode 
+ *
+ * @section step2 Step2: Implement abstract functions
+ * @brief You need to implement your four tls functions how you want to access to
+ * our end point onload or offload and also depending on your modem.
+ * 
+ * <p>
+ * <ul>
+ * <li>nce_TLS_Connect.</li>
+ * <li>nce_TLS_send</li>
+ * <li>nce_TLS_recv</li>
+ * <li>nce_TLS_Disconnect</li>
+ * </ul>  
+ * To implement your functions, we recommend to follow the examples.
+ * </p>
+ * 
+ * @subsection Example1 Quectel BG96 Offload Certificate:
+ * <p>
+ * For the Implementation we use the pseudo code:
+ * @code{c}
+    TlsTransportStatus_t TLS_Connect_impl(NetworkContext_t *pNetworkContext,
+                                          const char *pHostName, uint16_t port,
+                                          const NetworkCredentials_t *pNetworkCredentials,
+                                          uint32_t receiveTimeoutMs, 
+                                          uint32_t sendTimeoutMs)
+ * @endcode 
+ * <ol>
+ * <li>Configure the onboarding Socket <a href="https://github.com/1NCE-GmbH/blueprint-freertos/blob/94b2f0a364c958df57fe75e969aeef674fece6ba/libraries/3rdparty/NCE_SDK/nce_bg96_configuration.c#L41">example</a>.</li>
+ * <li>Create TCP Socket.</li>
+ * <li>Connect the socket with the endpoint ONBOARDING_ENDPOINT in port ONBOARDING_PORT</li>
+ * </ol>
+ * </p>
+ * @code{c}
+    int32_t TLS_send_impl(NetworkContext_t *pNetworkContext,
+                          const void *pBuffer,
+                          size_t bytesToSend)
+ * @endcode 
+ * <p> Create send via TLS for Quectel BG96 we can call At command AT+QSSLSEND </p>
+ * @code{c}
+    int32_t TLS_recv_impl(NetworkContext_t *pNetworkContext,
+                          void *pBuffer,
+                          size_t bytesToRecv)
+ * @endcode
+ * <p> Create Recv function via TLS for Quectel BG96 we can call At command AT+QSSLRECV </p>
+  * @code{c}
+    void TLS_Disconnect_impl(NetworkContext_t *pNetworkContext)
+ * @endcode
+ * <ol>
+ * <li>Call socket shutdown function to close the connection.</li>
+ * <li>Free mbedTLS contexts.</li>
+ * </ol>
+ * @subsection Example2 Quectel BG96 Unload Certificate:
+ * @brief For the Unload Certificate we can refer to FreeRTOS Demo <a href="https://github.com/FreeRTOS/Lab-Project-FreeRTOS-Cellular-Demo/blob/main/source/coreMQTT/using_mbedtls.c"> Code </a>
+ *
+ *
+ * @section step3 Step3: Integrate SDK in your Application
+ * @brief 1NCE SDK is simple to integrate in every Embedded App written with C, To begin, you need to define an object type tls_api and the affect to their variable the networkContext and implemented functions as shown in the example bellow.
+ * @code{c}
+    tls_api xtls_api;
+    xtls_api.pNetworkContext= &xNetworkContext;
+    xtls_api.conn=TLS_Connect_impl;
+    xtls_api.disconn=TLS_Disconnect_impl;
+    xtls_api.tlssend=TLS_send_impl;
+    xtls_api.tlsrecv=TLS_recv_impl;
+    nce_sdk(&xtls_api,1);
+ * @endcode
+ *<p> then you have the Root certificate store in rootCA , Client certificate in clientCert, 
+ * device private Key in prvKey Thingname, endpoint and topic name also stored in nceThingName,
+ * nceEndpoint, nceExampleTopic respectively. 
+ * nce_sdk function had two functionality the first one is to plug and play with MQTT and also
+ * with CoAP protocol to use DTLS you need just to change the 1 to 0
+ * </p>
+ * @code{c}
+    nce_sdk(&xtls_api,0);
+ * @endcode
+ * <p>
+ * then you stored the Pre-shared key and identity
+ * in psk, pskIdentity.
+ * </p>
+ *  
+ * @section step4 Step4: Run your Application
+ *
+ * Run your code in ISO C99
+ *
+ */

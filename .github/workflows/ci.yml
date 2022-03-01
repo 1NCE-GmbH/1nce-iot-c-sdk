@@ -93,7 +93,7 @@ jobs:
     - name: Check formatting
       run: |
           doxygen docs/doxygen/Doxyfile 2>&1 | tee doxyoutput.txt
-          if [[ "$(wc -c < doxyoutput.txt | bc)" = "0" ]]
+          if [ "$(wc -c < doxyoutput.txt | bc)" = "0" ]
             then exit 0
           else 
             exit 1 

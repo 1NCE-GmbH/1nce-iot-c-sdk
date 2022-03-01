@@ -37,7 +37,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Check complexity
+    - name: Check Complexity
       run: find source/ -iname '*.c' |
            xargs complexity --scores --threshold=0 --horrid-threshold=8
        
@@ -52,7 +52,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2             
-    - name: Check formatting
+    - name: Check Formatting
       run: cd source && find . -iname "*.[hc]" -type f -exec uncrustify --check -c ../tools/uncrustify.cfg -l C {} +
       
   spelling:
@@ -65,7 +65,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2             
-    - name: Check spelling
+    - name: Check Spelling
       run: |
           export USER=${{ github.actor }}
           PATH=$PATH:/CI-CD-Github-Actions/spellings/tools
@@ -90,7 +90,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2             
-    - name: Check formatting
+    - name: Check Doxygen
       run: |
           doxygen docs/doxygen/Doxyfile 2>&1 | tee doxyoutput.txt
           if [ "$(wc -c < doxyoutput.txt | bc)" = "0" ]

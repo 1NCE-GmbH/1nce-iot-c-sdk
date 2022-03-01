@@ -4,7 +4,7 @@
 **1NCE IoT C SDK** for Embedded C is a collection of C source files under the MIT Open source license that can be used in embedded applications to connect to benefit from diffrent services in 1NCE OS. it contains MQTT Onboarding, CoAP Onboarding and translation service. This SDK is independet of platform, can customer used in any device work with standard C. 
 
 ## License
-The 1NCE IoT C-SDK are licensed under the MIT open source license.
+The 1NCE IoT C-SDK are licensed under the [MIT](./LICENSE) open source license.
 
 ## Features
 1NCE IoT C SDK allow customers a seamless setup and use of all features as part of 1NCE OS. 
@@ -53,10 +53,10 @@ To set up and run the SDK you must first complete these tasks:
 - Install gcc to compile the project. For more information, see the https://gcc.gnu.org/install/index.html. you can find the downloads of compiler.
 
 #### Contents
-* [Step1: Clone Repository](#Step1_Clone_Repository_38)
-* [Step2: Implement abstract functions](#Step2_Implement_abstract_functions_52)
-* [Step3: Integrate SDK in your Application](#Step3_Integrate_SDK_in_your_Application_93)
-* [Step4: Run your Application](#Step4_Run_your_Application_122)
+* [Step1: Clone Repository](#Step1_Clone_Repository)
+* [Step2: Implement abstract functions](#Step2_Implement_abstract_functions)
+* [Step3: Integrate SDK in your Application](#Step3_Integrate_SDK_in_your_Application)
+* [Step4: Run your Application](#Step4_Run_your_Application)
 ## Step1: Clone Repository 
 you clone the SDK for Embedded C in your project using git clone
 To clone using HTTPS
@@ -141,4 +141,4 @@ doxygen docs/doxygen/Doxyfile
 ```
 
 ## Contributing
-See [CONTRIBUTING.md](https://gitlab.com/1nce-tech/cons/embedded/1nce_sdk/-/blob/main/CONTRIBUTING.md) for information on contributing
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for information on contributing

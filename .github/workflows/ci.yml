@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container:
-     image: docker pull ghcr.io/1nce-gmbh/1nce-iot-c-sdk:latest
+     image: ghcr.io/1nce-gmbh/1nce-iot-c-sdk:latest
      credentials:
          username: ${{ github.actor }}
          password: ${{ secrets.CONTAINER_KEY }}

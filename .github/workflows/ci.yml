@@ -26,6 +26,24 @@ jobs:
         -DBUILD_CLONE_SUBMODULES=ON \
         -DCMAKE_C_FLAGS='--coverage -Wall -Wextra -Werror -DNDEBUG'
          make -C build/ all
+         
+  checks:
+    runs-on: ubuntu-latest
+    container:
+     image: ghcr.io/1nce-gmbh/1nce-iot-c-sdk:latest
+     credentials:
+         username: ${{ github.actor }}
+         password: ${{ secrets.CONTAINER_KEY }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: complexity
+      run: find source/ -iname '*.c' | \
+           xargs complexity --scores --threshold=0 --horrid-threshold=8
+           
+    - name: formatting
+      run: cd source && find . -iname "*.[hc]" -type f -exec uncrustify --check -c ../tools/uncrustify.cfg -l C {} +
 
 
 

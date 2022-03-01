@@ -1,0 +1,32 @@
+name: CMake
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+     image: docker pull ghcr.io/1nce-gmbh/1nce-iot-c-sdk:latest
+     credentials:
+         username: ${{ github.actor }}
+         password: ${{ secrets.CONTAINER_KEY }}
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Build (CMake)
+      run: |
+        cmake -S test -B build/  \
+        -G "Unix Makefiles" \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DBUILD_CLONE_SUBMODULES=ON \
+        -DCMAKE_C_FLAGS='--coverage -Wall -Wextra -Werror -DNDEBUG'
+         make -C build/ all
+
+
+
+      

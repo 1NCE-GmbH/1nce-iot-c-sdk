@@ -1,20 +1,21 @@
 # 1NCE IoT C SDK
 
 ## Overview
-**1NCE IoT C SDK** for Embedded C is a collection of C source files under the MIT Open source license that can be used in embedded applications to connect to benefit from diffrent services in 1NCE OS. it contains MQTT Onboarding, CoAP Onboarding and translation service. This SDK is independet of platform, can customer used in any device work with standard C. 
+**1NCE IoT C SDK** for Embedded C is a collection of C source files under the MIT Open source license that can be used in embedded applications to connect to benefit from different services in 1NCE Connectivity Suite. it contains MQTT Onboarding, CoAP Onboarding, and translation service. This SDK is independent of the platform, can a customer use in any device work with standard C. 
 
 ## License
-The 1NCE IoT C-SDK are licensed under the [MIT](./LICENSE) open source license.
+The 1NCE IoT C-SDK is licensed under the [MIT](./LICENSE) open source license.
 
 ## Features
-1NCE IoT C SDK allow customers a seamless setup and use of all features as part of 1NCE OS. 
+1NCE IoT C SDK allows customers a seamless setup and use of all features as part of 1NCE Connectivity Suite. 
 1NCE IoT C SDK contains the following services: 
+
 ![Alt text](./docs/doxygen/images/overview.png?raw=true "overview")
 ### MQTT Onboarding
-The connection to AWS IoT core is mainly done through MQTT, and Devices are created as "Things" that can have various attributes to define their functionality. After creating a representation of the “thing” in AWS IoT Core, a certificate, private key, and public key are generated for the device to enable secure communication to the cloud. In addition, policy configuration is needed to determine what are the permissions granted for the device. In MQTT context, this can for example determine the topics that the device can Publish and/or Subscribe to.
+The connection to AWS IoT core is mainly done through MQTT, and Devices are created as "Things" that can have various attributes to define their functionality. After creating a representation of the “thing” in AWS IoT Core, a certificate, private key, and public key are generated for the device to enable secure communication to the cloud. In addition, policy configuration is needed to determine what are the permissions granted for the device. In the MQTT context, this can for example determine the topics that the device can Publish and/or Subscribe to.
 ![Alt text](./docs/doxygen/images/mqtt_onboarding.png?raw=true "MQTT Onboarding")
 ### CoaP Onboarding
-The 1NCE IoT c SDK also provides onboarding credintials for IoT devices communicating through DTLS. In this case the device recieves a DTLS Identity and a Pre-Shared Key (PSK) that can be used to establish secure connection to the CoAP endpoint of 1NCE Data Broker.
+The 1NCE IoT c SDK also provides onboarding credentials for IoT devices communicating through DTLS. In this case, the device receives a DTLS Identity and a Pre-Shared Key (PSK) that can be used to establish a secure connection to the CoAP endpoint of 1NCE Data Broker.
 ![Alt text](./docs/doxygen/images/coap_onboarding.png?raw=true "CoAP Onboarding")
 ### Translation Service (Binary conversion language)
 The translation service aims to minimize the payload size sent from the device to a simple byte array that can be converted to JSON Format. The resulting message is then sent using MQTT via the Data broker. Translating the byte array is done using Binary Conversion language which splits the array into a sequence of values defined in a translation template.
@@ -23,21 +24,21 @@ The translation service aims to minimize the payload size sent from the device t
 1NCE IoT C SDK releases will follow a [Semantic versioning](https://en.wikipedia.org/wiki/Software_versioning#Semantic_versioning)
 Given a version number MAJOR.MINOR.PATCH, increment the:
 * MAJOR version when you make incompatible SDK changes,
-* MINOR version when you add functionality in a backwards compatible manner,
-* PATCH version when you make backwards compatible bug fixes.
+* MINOR version when you add functionality in a backward-compatible manner,
+* PATCH version when you make backward-compatible bug fixes.
 
 ## Getting start 
 
 **This section shows you:**
 
-* How to get certificate using 1nce onboarding end point.
+* How to get a certificate using 1nce onboarding endpoint.
 * How to process the certificate to make it usable for AWS services.
-* How to get the identity and pre-shared key using 1nce onboarding end point. (for CoAP application).
+* How to get the identity and pre-shared key using 1nce onboarding endpoint. (for CoAP application).
 * How to use 1NCE Translation Service to reduce the data (and/ or Energy) consumption. 
 
 ### The Scenario
 
-The Example shows how to set up and integrate 1nce SDK in Embedded Application written in C.
+The example shows how to set up and integrate 1nce SDK in Embedded Application written in C.
 
 This Example includes two cases: 
 * Offload certificates.
@@ -50,7 +51,7 @@ The Examples used FreeRTOS as First Version.
 
 To set up and run the SDK you must first complete these tasks:
 
-- Install gcc to compile the project. For more information, see the https://gcc.gnu.org/install/index.html. you can find the downloads of compiler.
+- Install gcc to compile the project. For more information, see the https://gcc.gnu.org/install/index.html. you can find the downloads of the compiler.
 
 #### Contents
 * [Step1: Clone Repository](#Step1_Clone_Repository)
@@ -72,7 +73,7 @@ If you have downloaded the repo without using the ```--recurse-submodules``` arg
 git submodule update --init --recursive
 ```
 ### Step2: Implement abstract functions
-You need to implement your four tls functions how you want to access to our end point onload or offload and also depending on your modem. 
+You need to implement your four TLS functions how you want to access our endpoint onload or offload and also depending on your modem. 
 
 * nce_TLS_Connect
 * nce_TLS_send
@@ -111,9 +112,9 @@ void TLS_Disconnect_impl(NetworkContext_t *pNetworkContext)
 1- Call socket shutdown function to close the connection
 2- Free mbedTLS contexts.
 ###### 2. Onload Certificate:
-For the Unload Certificate we can reffer to [using_mbedtls in FreeRTOS Demo](https://github.com/FreeRTOS/Lab-Project-FreeRTOS-Cellular-Demo/blob/main/source/coreMQTT/using_mbedtls.c)
+For the Unload Certificate, we can refer to [using_mbedtls in FreeRTOS Demo](https://github.com/FreeRTOS/Lab-Project-FreeRTOS-Cellular-Demo/blob/main/source/coreMQTT/using_mbedtls.c)
 ### Step3: Integrate SDK in your Application
-1NCE SDK is simple to integrate in every Embedded App written with C, To begin, you neet to define an object type tls_api and the affect to thier variable the networkContext and implimented functions as shown in the example bellow. 
+1NCE SDK is simple to integrate into every Embedded App written with C, To begin, you need to define an object type tls_api and the affect to their variable the networkContext and implemented functions as shown in the example below. 
 ```
     tls_api xtls_api;
     xtls_api.pNetworkContext= &xNetworkContext;
@@ -123,7 +124,7 @@ For the Unload Certificate we can reffer to [using_mbedtls in FreeRTOS Demo](htt
     xtls_api.tlsrecv=TLS_recv_impl;
     nce_sdk(&xtls_api,1);
 ```
-then you have the Root certificate store in ```rootCA``` , Client certificate in ```clientCert``` , device private Key in ```prvKey```
+then you have the Root certificate stored in ```rootCA``` , Client certificate in ```clientCert``` , device private Key in ```prvKey```
 Thingname, endpoint and topic name also stored in ```nceThingName ```,```nceEndpoint```,```nceExampleTopic``` respectively.
 nce_sdk function had two functionality the first one is to plug and play with MQTT and also with CoAP protocol to use DTLS you need just to change the 1 to 0 
 ```

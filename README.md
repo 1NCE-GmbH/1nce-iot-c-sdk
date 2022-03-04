@@ -1,4 +1,4 @@
-[![1nce-iot-c-sdk-checks](https://github.com/1NCE-GmbH/1nce-iot-c-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/1NCE-GmbH/1nce-iot-c-sdk/actions/workflows/ci.yml)
+[![SDK-Checks](https://github.com/1NCE-GmbH/1nce-iot-c-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/1NCE-GmbH/1nce-iot-c-sdk/actions/workflows/ci.yml)
 
 # 1NCE IoT C SDK
 
@@ -12,22 +12,28 @@ The 1NCE IoT C-SDK is licensed under the [MIT](./LICENSE) open source license.
 1NCE IoT C SDK allows customers a seamless setup and use of all features as part of 1NCE Connectivity Suite. 
 1NCE IoT C SDK contains the following services: 
 
-![Alt text](./docs/doxygen/images/overview.png?raw=true "overview")
+<p align="center"><img src="./docs/doxygen/images/overview.png"><br>
+</p>
+
 ### MQTT Onboarding
 The connection to AWS IoT core is mainly done through MQTT, and Devices are created as "Things" that can have various attributes to define their functionality. After creating a representation of the “thing” in AWS IoT Core, a certificate, private key, and public key are generated for the device to enable secure communication to the cloud. In addition, policy configuration is needed to determine what are the permissions granted for the device. In the MQTT context, this can for example determine the topics that the device can Publish and/or Subscribe to.
 
-![Alt text](./docs/doxygen/images/mqtt_onboarding.png?raw=true "MQTT Onboarding")
+<p align="center"><img src="./docs/doxygen/images/mqtt_onboarding.png"><br>
+</p>
+
 ### CoAP Onboarding
 The 1NCE IoT c SDK also provides onboarding credentials for IoT devices communicating through DTLS. In this case, the device receives a DTLS Identity and a Pre-Shared Key (PSK) that can be used to establish a secure connection to the CoAP endpoint of 1NCE Data Broker.
 
-![Alt text](./docs/doxygen/images/coap_onboarding.png?raw=true "CoAP Onboarding")
+<p align="center"><img src="./docs/doxygen/images/coap_onboarding.png"><br>
+</p>
 
 More details about device onboarding are available at [1NCE Developer Hub (SIM-as-an-Identity)](https://help.1nce.com/dev-hub/docs/connectivity-suite-sim-identity). 
 
 ### Translation Service (Binary conversion language)
 The translation service aims to minimize the payload size sent from the device to a simple byte array that can be converted to JSON Format. The resulting message is then sent using MQTT via the Data broker. Translating the byte array is done using Binary Conversion language which splits the array into a sequence of values defined in a translation template. 
 
-![Alt text](./docs/doxygen/images/translation_service.png?raw=true "translation service")
+<p align="center"><img src="./docs/doxygen/images/translation_service.png"><br>
+</p>
 
  Check  [1NCE Developer Hub (Translation service)](https://help.1nce.com/dev-hub/docs/connectivity-suite-translation-service) for further explantion of the translation template creation.
 
@@ -60,10 +66,7 @@ The Examples used FreeRTOS as First Version.
 
 ### Prerequisite Tasks
 
-The SDK requires using a 1NCE simcard with a connected AWS account configured through [1NCE Portal](https://portal.1nce.com/)
-To set up and run the SDK you must first complete these tasks:
-
-- Install gcc to compile the project. For more information, see the https://gcc.gnu.org/install/index.html. you can find the downloads of the compiler.
+The SDK requires using a 1NCE simcard with a connected AWS account configured through [1NCE Portal](https://portal.1nce.com/). gcc must also be installed to compile the project. For more information, see the https://gcc.gnu.org/install/index.html. you can find the downloads of the compiler.
 
 #### Contents
 * [Step 1: Clone Repository](#Step1_Clone_Repository)
@@ -156,27 +159,38 @@ then we can have the pre-shared key and identity stored in ```psk``` and ```pskI
 
 ```nce_generate_BCL_payload``` function can be used to convert payloads to binary format. The following figure shows a sample translation template that can be used to share GPS data and device information: 
 
-![Alt text](./docs/doxygen/images/translation_template_1.png?raw=true "Translation service template")
+<p align="center"><img src="./docs/doxygen/images/translation_template_1.png"><br>
+</p>
 
 Considering case 1:
 
-![Alt text](./docs/doxygen/images/translation_template_2.png?raw=true "Case 1")
+<p align="center"><img src="./docs/doxygen/images/translation_template_2.png"><br>
+</p>
 
 The binary payload for this case can be generated as follows
 
 ```
+    /* values to be sent */
 	uint8_t battery_level = 99;
 	uint8_t signal_strength = 84;
 	char software_version[] = "2.2.1";
 	
-	uint8_t selector = 1 ;
-	int location=1;
+    /* Template information */
 	char type[] = "UUS"; 
 	int bytelength[]={1,1,5};
-	uint8_t packet[50];
 
+
+    uint8_t selector = 1  /* select case 1 */;
+	int location=1;
+	uint8_t packet[8];
+
+    /* Add battery level */
 	location = nce_generate_BCL_payload( type, 0,packet, selector,&battery_level,location,bytelength );
+    
+    /* Add signal strength */
 	location = nce_generate_BCL_payload( type, 1,packet, selector,&signal_strength,location,bytelength );
+    
+    /* Add software version */
 	location = nce_generate_BCL_payload( type, 2,packet, selector,software_version,location,bytelength );
 ```
 The resulting packet can then be sent to the translation service for further processing

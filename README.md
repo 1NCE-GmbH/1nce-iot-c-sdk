@@ -18,13 +18,13 @@ The 1NCE IoT C-SDK is licensed under the [MIT](./LICENSE) open source license.
 ### MQTT Onboarding
 The connection to AWS IoT core is mainly done through MQTT, and Devices are created as "Things" that can have various attributes to define their functionality. After creating a representation of the “thing” in AWS IoT Core, a certificate, private key, and public key are generated for the device to enable secure communication to the cloud. In addition, policy configuration is needed to determine what are the permissions granted for the device. In the MQTT context, this can for example determine the topics that the device can Publish and/or Subscribe to.
 
-<p align="center"><img src="./docs/doxygen/images/mqtt_onboarding.png"><br>
+<p align="center"><img src="./docs/doxygen/images/mqtt_onboarding.png" width="70%"><br>
 </p>
 
 ### CoAP Onboarding
 The 1NCE IoT c SDK also provides onboarding credentials for IoT devices communicating through DTLS. In this case, the device receives a DTLS Identity and a Pre-Shared Key (PSK) that can be used to establish a secure connection to the CoAP endpoint of 1NCE Data Broker.
 
-<p align="center"><img src="./docs/doxygen/images/coap_onboarding.png"><br>
+<p align="center"><img src="./docs/doxygen/images/coap_onboarding.png" width="70%"><br>
 </p>
 
 More details about device onboarding are available at [1NCE Developer Hub (SIM-as-an-Identity)](https://help.1nce.com/dev-hub/docs/connectivity-suite-sim-identity). 
@@ -66,7 +66,7 @@ The Examples used FreeRTOS as First Version.
 
 ### Prerequisite Tasks
 
-The SDK requires using a 1NCE simcard with a connected AWS account configured through [1NCE Portal](https://portal.1nce.com/). gcc must also be installed to compile the project. For more information, see the https://gcc.gnu.org/install/index.html. you can find the downloads of the compiler.
+The SDK requires using a 1NCE SIM card with a connected AWS account configured through [1NCE Portal](https://portal.1nce.com/). GCC must also be installed to compile the project. For more information, see the https://gcc.gnu.org/install/index.html. you can find the downloads of the compiler.
 
 #### Contents
 * [Step 1: Clone Repository](#Step1_Clone_Repository)
@@ -139,7 +139,7 @@ For the Onload Certificate, we can refer to [using_mbedtls in FreeRTOS Demo](htt
     xtls_api.tlssend=TLS_send_impl;
     xtls_api.tlsrecv=TLS_recv_impl;
 ```
-#### 1. Using MQTT
+#### 1. MQTT
 The  object can then be passed to ```nce_sdk``` function as follows: 
 
 ``` 
@@ -148,14 +148,14 @@ The  object can then be passed to ```nce_sdk``` function as follows:
 then you have the Root certificate stored in ```rootCA``` , Client certificate in ```clientCert``` , device private Key in ```prvKey```
 Thingname, endpoint and topic name also stored in ```nceThingName ```,```nceEndpoint```,```nceExampleTopic``` respectively.
 
-#### 2. Using CoAP
+#### 2. CoAP
 With CoAP protocol  (using DTLS) you need just to change the 1 to 0 
 ```
     nce_sdk(&xtls_api,0);
 ```
 then we can have the pre-shared key and identity stored in ```psk``` and ```pskIdentity```
 
-#### 3. Using the translation service
+#### 3. Translation service
 
 ```nce_generate_BCL_payload``` function can be used to convert payloads to binary format. The following figure shows a sample translation template that can be used to share GPS data and device information: 
 

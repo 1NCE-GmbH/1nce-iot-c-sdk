@@ -38,7 +38,7 @@ PROJECT_NAME           = "1NCE IoT C-SDK"
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
 
-PROJECT_NUMBER         = 1.0.0
+PROJECT_NUMBER         = 2.0.0
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
@@ -1020,10 +1020,9 @@ EXAMPLE_RECURSIVE      = NO
 # that contain images that are to be included in the documentation (see the
 # \image command).
 
-IMAGE_PATH             = ./docs/doxygen/images/mqtt_onboarding.png \
-                         ./docs/doxygen/images/overview.png \
-                         ./docs/doxygen/images/translation_service.png \
-                         ./docs/doxygen/images/coap_onboarding.png
+IMAGE_PATH             = ./docs/doxygen/images/overview.png \
+                         ./docs/doxygen/images/energy_saver.png \
+                         ./docs/doxygen/images/coap_device_authenticator.png
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program

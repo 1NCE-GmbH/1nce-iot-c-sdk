@@ -34,6 +34,10 @@
 #include <stdio.h>
 #include "log_interface.h"
 
+#ifdef __ZEPHYR__
+LOG_MODULE_REGISTER( NCE_SDK, CONFIG_NCE_SDK_LOG_LEVEL );
+#endif /* ifdef  __ZEPHYR__ */
+
 #ifdef NCE_DEVICE_AUTHENTICATOR
 
 /**

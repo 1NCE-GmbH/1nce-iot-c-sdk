@@ -14,7 +14,18 @@ void vLoggingPrintf( const char * pcFormat,
     #define NceOSLogError( format, ... )    vLoggingPrintf( format, ## __VA_ARGS__ )
     #define NceOSLogWarn( format, ... )     vLoggingPrintf( format, ## __VA_ARGS__ )
 
-#else 
+#elif defined( __ZEPHYR__ )
+    #include <zephyr/logging/log.h>
+
+/**
+ *  @brief implementation of logging macros for ZEPHYR OS.
+ */
+    #define NceOSLogInfo( ... )     LOG_INF( __VA_ARGS__ )
+    #define NceOSLogDebug( ... )    LOG_DBG( __VA_ARGS__ )
+    #define NceOSLogError( ... )    LOG_ERR( __VA_ARGS__ )
+    #define NceOSLogWarn( ... )     LOG_WRN( __VA_ARGS__ )
+
+#else /* ifdef FREERTOS */
 
 /**
  *  @brief Define the abbreviated logging macros.

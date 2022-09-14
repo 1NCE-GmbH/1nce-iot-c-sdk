@@ -64,6 +64,11 @@ enum
  */
     #define  NCE_DEVICE_AUTHENTICATOR
 
+/**
+ * @brief Enable 1NCE Energy Saver.
+ */
+    #define  NCE_ENERGY_SAVER
+
 #endif /* ifndef __ZEPHYR__ */
 
 
@@ -120,5 +125,71 @@ int os_auth( os_network_ops_t * osNetwork,
 
 
 #endif /* ifdef NCE_DEVICE_AUTHENTICATOR */
+
+#ifdef NCE_ENERGY_SAVER
+
+/**
+ * @brief Enums representing different type of 1NCE OS variables in the message.
+ */
+enum E_Type
+{
+    E_CHAR,
+    E_FLOAT,
+    E_INTEGER,
+    E_STRING
+};
+
+/**
+ * @brief Represents value send to our service.
+ */
+typedef struct Element_Gen
+{
+    /**
+     * @brief Enums representing different type of 1NCE OS variables in the message.
+     */
+    enum E_Type type;
+
+    /**
+     * @brief Union type to access the byte message.
+     * @note If you have float=f; string=s; int=i;
+     */
+    union E_Value_gen
+    {
+        char c;                     /**< if the variable is character */
+        float f;                    /**< if the variable is float */
+        int i;                      /**< if the variable is integer */
+        char s[ 500 ];              /**< if the variable is string */
+        unsigned char bytes[ 500 ]; /**< for returning bytes */
+    }
+
+    /**
+     * @brief value of the variable in message.
+     */
+    value;
+
+    /**
+     * @brief Length of the chunk in bytes.
+     * @note Must be the same in the given template (1NCE portal).
+     */
+    int template_length;
+}
+Element2byte_gen_t;
+
+/**
+ * @brief Translation service feature: translates message to binary payload with a given template in 1NCE Portal.
+ *
+ * @param[in] packet: Packet to send to the endpoint
+ * @param[in] selector: Select data used in control statement.
+ * @param[in] num_args: Number of arguments in function.
+ *
+ * @return location in memory.
+ */
+int os_energy_save( char * packet,
+                    int selector,
+                    int num_args,
+                    ... );
+
+#endif /* ifdef NCE_ENERGY_SAVER */
+
 
 #endif /* ifndef NCE_IOT_C_SDK_H_ */

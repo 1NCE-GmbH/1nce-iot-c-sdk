@@ -180,3 +180,46 @@ int os_auth( os_network_ops_t * osNetwork,
 }
 
 #endif /* ifdef NCE_DEVICE_AUTHENTICATOR */
+
+/*-----------------------------------------------------------*/
+
+#ifdef NCE_ENERGY_SAVER
+
+int os_energy_save( char * packet,
+                    int selector,
+                    int num_args,
+                    ... )
+{
+    int location = 1;
+    va_list ap;
+    Element2byte_gen_t e;
+    int i;
+
+    memcpy( packet, &selector, 1 );
+    va_start( ap, num_args );
+
+    for( i = 0; i < num_args; i++ )
+    {
+        e = va_arg( ap, Element2byte_gen_t );
+        memcpy( packet + location, &e.value.bytes, e.template_length );
+        location += e.template_length;
+
+        if( ( e.type == E_STRING ) && ( location != ( int ) strlen( packet ) ) )
+        {
+            NceOSLogError( "String Conversion Error.\n" );
+            return NCE_SDK_BINARY_PAYLOAD_ERROR;
+        }
+    }
+
+    va_end( ap );
+
+    if( location == 1 )
+    {
+        NceOSLogError( "Conversion Error.\n" );
+        return NCE_SDK_BINARY_PAYLOAD_ERROR;
+    }
+
+    return location;
+}
+
+#endif /* ifdef NCE_ENERGY_SAVER */

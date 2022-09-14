@@ -5,6 +5,8 @@ api
 app
 args
 argumentlength
+authentication
+authenticator
 aws
 bcl
 bool
@@ -69,11 +71,7 @@ mit
 mohamed
 mqtt
 nce
-nceendpoint
-nceexampletopic
-ncethingname
-networkcontext
-networkcredentials
+ncekey
 noninfringement
 ol
 onboard
@@ -82,6 +80,8 @@ onbord
 onload
 org
 orig
+os
+osnetwork
 param
 params
 pargument
@@ -96,13 +96,11 @@ png
 posix
 pprivatekey
 pre
-prvkey
 printf
-privatekeysize
-prootca
+prvinitializeclientcredential
 psk
 pskidentity
-pxnetworkcontext
+pxctx
 qsslrecv
 qsslsend
 quectel
@@ -111,8 +109,6 @@ recv
 recvbytes
 retval
 repo
-rootca
-rootcasize
 sdk
 sendtimeoutms
 setuptlsinterface
@@ -138,6 +134,5 @@ uint
 ul
 utest
 wikipedia
-xnetworkcontext
-xnetworkstatus
-xtls
+xosnetwork
+xresult

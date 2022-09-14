@@ -7,7 +7,7 @@
 
 # NCE library source files.
 set( NCE_SOURCES
-     "${CMAKE_CURRENT_LIST_DIR}/source/nce_sdk.c" )
+     "${CMAKE_CURRENT_LIST_DIR}/source/nce_iot_c_sdk.c" )
 
 # NCE library Public Include directories.
 set( NCE_INCLUDE_PUBLIC_DIRS

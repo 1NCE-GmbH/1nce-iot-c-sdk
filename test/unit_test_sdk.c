@@ -141,3 +141,36 @@ void test_os_auth_failure_response( void )
 
     TEST_ASSERT_EQUAL_INT( os_auth( &osNetwork, &nceKey ), NCE_SDK_PARSING_ERROR );
 }
+
+
+/**
+ * @brief Test 4 ( successful binary conversion ).
+ */
+void test_os_energy_save_success( void )
+{
+    Element2byte_gen_t battery_level = { .type = E_INTEGER, .value.i = 99, .template_length = 1 };
+    Element2byte_gen_t signal_strength = { .type = E_INTEGER, .value.i = 84, .template_length = 1 };
+    Element2byte_gen_t software_version = { .type = E_STRING, .value.s = "2.2.1", .template_length = 5 };
+    uint8_t selector = 1;
+    char pcTransmittedString[ 50 ];
+
+    memset( pcTransmittedString, '\0', 50 );
+    int expected_location = 8;
+
+    TEST_ASSERT_EQUAL_INT( os_energy_save( pcTransmittedString, selector, 3, battery_level, signal_strength, software_version ), expected_location );
+}
+
+/**
+ * @brief Test 5 ( invalid binary conversion - the provided string size is not equal to the template length - ).
+ */
+void test_os_energy_save_failure( void )
+{
+    Element2byte_gen_t software_version = { .type = E_STRING, .value.s = "1.1", .template_length = 5 };
+
+    uint8_t selector = 1;
+    char pcTransmittedString[ 50 ];
+
+    memset( pcTransmittedString, '\0', 50 );
+
+    TEST_ASSERT_EQUAL_INT( os_energy_save( pcTransmittedString, selector, 2, software_version ), NCE_SDK_BINARY_PAYLOAD_ERROR );
+}

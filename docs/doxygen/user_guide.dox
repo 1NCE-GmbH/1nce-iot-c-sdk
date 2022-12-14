@@ -12,7 +12,7 @@
  *
  *
  * @section scenario The scenario
- * @brief The Example sows how to set up and integrate 1nce SDK in Embedded Application written in C.
+ * @brief The Example sows how to set up and integrate 1NCE SDK in Embedded Application written in C.
  *
  * The Examples used FreeRTOS in the first version.
  * </p>
@@ -42,7 +42,7 @@
  * @section Step1 Step1: Clone Repository
  * @brief you clone the SDK for Embedded C in your project using git clone To clone using HTTPS
  * @code{command}
-    git clone https://github.com/1NCE-GmbH/1nce-iot-c-sdk.git --recurse-submodules
+    git clone https://github.com/1NCE-GmbH/1nce-iot-c-sdk.git
  * @endcode 
  * 
  * 
@@ -50,59 +50,25 @@
  * with SSH
  * </p>
  * @code{command}
-    git clone git@github.com:1NCE-GmbH/1nce-iot-c-sdk.git --recurse-submodules
+    git clone git@github.com:1NCE-GmbH/1nce-iot-c-sdk.git 
  * @endcode 
  * 
- * <p>
- * If you have downloaded the repo without using the --recurse-submodules argument, you need to run:
- * </p>
-  * @code{command}
-    git submodule update --init --recursive
- * @endcode 
  *
  * @section step2 Step2: Implement abstract functions
- * @brief You need to implement your four tls functions how you want to access to
- * our end point onload or offload and also depending on your modem.
+ * @brief You need to implement your four transport functions how you want to access our endpoint. 
  * 
  * <p>
  * <ul>
- * <li>nce_os_tls_connect.</li>
- * <li>nce_os_tls_send</li>
- * <li>nce_os_tls_recv</li>
- * <li>nce_os_tls_disconnect</li>
+ * <li>nce_os_udp_connect</li>
+ * <li>nce_os_udp_send</li>
+ * <li>nce_os_udp_recv</li>
+ * <li>nce_os_udp_disconnect</li>
  * </ul>  
- * To implement your functions, we recommend to follow the example.
+ * To implement your functions, we recommend to see our Blueprints.
  * </p>
  * 
- * <p>
- * For the Implementation we use the pseudo code:
- * @code{c}
-    int tls_connect_impl(OSNetwork_t osnetwork,OSEndPoint_t nce_oboarding)
- * @endcode 
- * <ol>
- * <li>Configure the onboarding Socket <a href="https://github.com/1NCE-GmbH/blueprint-freertos/blob/94b2f0a364c958df57fe75e969aeef674fece6ba/libraries/3rdparty/NCE_SDK/nce_bg96_configuration.c#L41">example</a>.</li>
- * <li>Create TCP Socket.</li>
- * <li>Connect the socket with the endpoint.</li>
- * </ol>
- * </p>
- * @code{c}
-    int32_t tls_send_impl(OSNetwork_t osnetwork,
-                          void *pBuffer,
-                          size_t bytesToSend)
- * @endcode 
- * <p> Create send via TLS for Quectel BG96 we can call At command AT+QSSLSEND </p>
- * @code{c}
-    int32_t tls_recv_impl(OSNetwork_t osnetwork,
-                          void *pBuffer,
-                          size_t bytesToRecv)
- * @endcode
- * <p> Create Recv function via TLS for Quectel BG96 we can call At command AT+QSSLRECV </p>
-  * @code{c}
-    int tls_disconnect_impl(OSNetwork_t osnetwork)
- * @endcode
- * <ol>
- * <li>Call socket shutdown function to close the connection.</li>
- * </ol>
+ * <a href="https://github.com/1NCE-GmbH/blueprint-freertos" > FreeRTOS BluePrint </a>
+ * <a href="https://github.com/1NCE-GmbH/blueprint-zephyr" > Zephyr BluePrint </a>
  *
  * @section step3 Step3: Integrate SDK in your Application
  * @brief 1NCE SDK is simple to integrate in every Embedded App written with C, To begin, you need to define an object type OSNetwork_t and the affect to their variable the network socket and implemented functions as shown in the example bellow.
@@ -110,35 +76,16 @@
    OSNetwork_t xOSNetwork= { 0 };
    os_network_ops_t osNetwork={
       .os_socket=&xOSNetwork,
-		.nce_os_tls_connect=tls_connect_impl,
-		.nce_os_tls_send=tls_send_impl,
-		.nce_os_tls_recv=tls_recv_impl,
-      .nce_os_tls_disconnect=tls_disconnect_impl};
+		.nce_os_udp_connect = nce_os_udp_connect_impl,
+		.nce_os_udp_send = nce_os_udp_send_impl,
+		.nce_os_udp_recv = nce_os_udp_recv_impl,
+		.nce_os_udp_disconnect = nce_os_udp_disconnect_impl};
  * @endcode
  * to have PSK you can call os_auth and you have an object DtlsKey_t which store the PSK and pskIdentity
  * </p>
  * @code{c}
-static int prvInitializeClientCredential( TLSContext_t * pxCtx )
-{
-	DEVICE_ONBOARDED=false;
     DtlsKey_t nceKey={0};
-    int result=	os_auth(&osNetwork,&nceKey);
-    BaseType_t xResult = CKR_OK;
-    /* Attach the client PSK the DTLS configuration. */
-    if( 0 == xResult )
-    {
-        /*Use PSK */
-
-        size_t psk_len  = strlen(nceKey.Psk);
-		size_t psk_identity_len  = strlen(nceKey.PskIdentity);
-
-        xResult = mbedtls_ssl_conf_psk( &pxCtx->xMbedSslConfig,
-                &(nceKey.Psk),strlen(nceKey.Psk),&(nceKey.PskIdentity),psk_identity_len);
-
-    }
-    DEVICE_ONBOARDED=true;
-    return xResult;
-}
+    int result =	os_auth(&osNetwork,&nceKey);
  * @endcode
  * <p>Complete the following  macros  in log_interface.h </p> 
  * @code{c}

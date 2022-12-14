@@ -1,4 +1,7 @@
 [![SDK-Checks](https://github.com/1NCE-GmbH/1nce-iot-c-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/1NCE-GmbH/1nce-iot-c-sdk/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+![version](https://img.shields.io/badge/version-2.0.0-blue)
+
 
 # 1NCE IoT C SDK
 
@@ -19,10 +22,10 @@ The 1NCE IoT C-SDK is licensed under the [MIT](./LICENSE) open source license.
 ### Device Authenticator (CoAP)
 The 1NCE IoT c SDK also provides authentication for IoT devices communicating through DTLS. In this case, the device receives a DTLS Identity and a Pre-Shared Key (PSK) that can be used to establish a secure connection to the CoAP endpoint of 1NCE Data Broker.
 
-<p align="center"><img src="./docs/doxygen/images/coap_device_authenticator.png" width="70%"><br>
+<p align="center"><img src="./docs/doxygen/images/coap_device_authenticator.png"><br>
 </p>
 
-More details about device authentification are available at [1NCE Developer Hub (SIM-as-an-Identity)](https://help.1nce.com/dev-hub/docs/connectivity-suite-sim-identity). 
+More details about device authentification are available at [1NCE Developer Hub (Device Authenticator)](https://help.1nce.com/dev-hub/docs/1nce-os-device-authenticator). 
 
 ### Energy Saver (Binary conversion language)
 The Energy Saver aims to minimize the payload size sent from the device to a simple byte array that can be converted to JSON Format. The resulting message is then sent using MQTT via the Data broker. Translating the byte array is done using Binary Conversion language which splits the array into a sequence of values defined in a translation template. 
@@ -30,7 +33,7 @@ The Energy Saver aims to minimize the payload size sent from the device to a sim
 <p align="center"><img src="./docs/doxygen/images/energy_saver.png"><br>
 </p>
 
- Check  [1NCE Developer Hub (Energy Saver)](https://help.1nce.com/dev-hub/docs/connectivity-suite-translation-service) for further explantion of the translation template creation.
+ Check  [1NCE Developer Hub (Energy Saver)](https://help.1nce.com/dev-hub/docs/1nce-os-energy-saver) for further explantion of the translation template creation.
 
 ## Versioning
 1NCE IoT C SDK releases will follow a [Semantic versioning](https://en.wikipedia.org/wiki/Software_versioning#Semantic_versioning)
@@ -65,51 +68,29 @@ The SDK requires using a 1NCE SIM card with a connected AWS account configured t
 you clone the SDK for Embedded C in your project using git clone
 To clone using HTTPS
 ```
-git clone https://github.com/1NCE-GmbH/1nce-iot-c-sdk.git --recurse-submodules
+git clone https://github.com/1NCE-GmbH/1nce-iot-c-sdk.git
 ```
 Using SSH
 ```
-git clone git@github.com:1NCE-GmbH/1nce-iot-c-sdk.git --recurse-submodules
+git clone git@github.com:1NCE-GmbH/1nce-iot-c-sdk.git 
 ```
-If you have downloaded the repo without using the ```--recurse-submodules``` argument, you need to run:
-```
-git submodule update --init --recursive
-```
+
 ### Step 2: Implement abstract functions
-You need to implement your four TLS functions how you want to access our endpoint onload or offload and also depending on your modem. 
+You need to implement your four transport functions how you want to access our endpoint. 
 
-* nce_os_tls_connect
-* nce_os_tls_send
-* nce_os_tls_recv
-* nce_os_tls_disconnect
+* nce_os_udp_connect
+* nce_os_udp_send
+* nce_os_udp_recv
+* nce_os_udp_disconnect
 
-To implement your functions, we recommend following the example.
+To implement your functions, we recommend to see our Blueprints 
 
-#### Example Quectel BG96
 
-For the Implementation, we use the pseudocode: 
-```
-int tls_connect_impl(OSNetwork_t osnetwork,OSEndPoint_t nce_oboarding)
-```
-1. [configure the onboarding socket](https://github.com/1NCE-GmbH/blueprint-freertos/blob/94b2f0a364c958df57fe75e969aeef674fece6ba/libraries/3rdparty/NCE_SDK/nce_bg96_configuration.c#L41)
-2. Create TCP Socket.
-3. Connect the socket with the endpoint 
-```
-int32_t tls_send_impl(OSNetwork_t osnetwork,
-					  void *pBuffer,
-					  size_t bytesToSend)
-```
-Create send via TLS for Quectel BG96 we can call At command ```AT+QSSLSEND``` 
-```
-int32_t tls_recv_impl( OSNetwork_t osnetwork,
-                       void *pBuffer,
-			           size_t bytesToRecv )
-```
-Create Recv function via TLS for Quectel BG96 we can call At command ```AT+QSSLRECV``` 
-```
-int tls_disconnect(OSNetwork_t osnetwork)
-```
-1. Call socket shutdown function to close the connection
+[FreeRTOS BluePrint](https://github.com/1NCE-GmbH/blueprint-freertos)
+
+[Zephyr BluePrint](https://github.com/1NCE-GmbH/blueprint-zephyr)
+
+
 
 ### Step 3: Integrate SDK in your Application
 
@@ -117,35 +98,19 @@ int tls_disconnect(OSNetwork_t osnetwork)
 
 ```
 OSNetwork_t xOSNetwork= { 0 };
-
-os_network_ops_t osNetwork={.os_socket=&xOSNetwork,
-							.nce_os_tls_connect=tls_connect_impl,
-							.nce_os_tls_send=tls_send_impl,
-							.nce_os_tls_recv=tls_recv_impl,
-							.nce_os_tls_disconnect=tls_disconnect_impl};
+os_network_ops_t osNetwork={
+		.os_socket=&xOSNetwork,
+		.nce_os_udp_connect = nce_os_udp_connect_impl,
+		.nce_os_udp_send = nce_os_udp_send_impl,
+		.nce_os_udp_recv = nce_os_udp_recv_impl,
+		.nce_os_udp_disconnect = nce_os_udp_disconnect_impl };
 ```
 
 #### 1. CoAP
 With CoAP protocol  (using DTLS) you can call ```os_auth```
 ```
-static int prvInitializeClientCredential( TLSContext_t * pxCtx )
-{
-	DEVICE_ONBOARDED=false;
-	DtlsKey_t nceKey={0};
-	int result= os_auth(&osNetwork,&nceKey);
-	BaseType_t xResult = CKR_OK;
-	/* Attach the client PSK the DTLS configuration. */
-	if( 0 == xResult )
-	{
-	/*Use PSK */
-	size_t psk_len = strlen(nceKey.Psk);
-	size_t psk_identity_len = strlen(nceKey.PskIdentity);
-	xResult = mbedtls_ssl_conf_psk( &pxCtx->xMbedSslConfig,
-			&(nceKey.Psk),strlen(nceKey.Psk),&(nceKey.PskIdentity),psk_identity_len);
-	}
-	DEVICE_ONBOARDED=true;
-	return xResult;
-}
+    DtlsKey_t nceKey={0};
+    int result =	os_auth(&osNetwork,&nceKey);
 ```
 then we can have ```psk``` and ```pskIdentity``` stored in ```DtlsKey_t``` struct.
 
@@ -172,7 +137,7 @@ The binary payload for this case can be generated as follows
     uint8_t selector = 1;  /* select case 1 */
 	char pcTransmittedString[500];
 	int status=1;
-	/* if status=1 then the energy save faild */
+	/* if status=1 then the energy save failed */
 	status=os_energy_save(pcTransmittedString,selector, 3,battery_level,signal_strength,software_version);
 	
 ```

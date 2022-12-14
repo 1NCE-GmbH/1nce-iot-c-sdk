@@ -6,9 +6,9 @@
 
 @section features Features
 The following services are part of this SDK:
-- [Use 1NCE Data Broker] - [Data Broker](https://help.1nce.com/dev-hub/docs/connectivity-suite-data-broker)
-- [SIM as an Identity] - [SIM-as-Identity](https://help.1nce.com/dev-hub/docs/connectivity-suite-sim-identity)
-- [Energy Saver] - [Energy saver](https://help.1nce.com/dev-hub/docs/connectivity-suite-translation-service)
+- [Device Integrator] - [Device Integrator](https://help.1nce.com/dev-hub/docs/1nce-os-device-integrator)
+- [Device Authenticator] - [Device Authenticator](https://help.1nce.com/dev-hub/docs/1nce-os-device-authenticator)
+- [Energy Saver] - [Energy saver](https://help.1nce.com/dev-hub/docs/1nce-os-energy-saver)
 
 @image html overview.png 1NCE IoT C SDK Overview width=50%
 

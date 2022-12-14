@@ -97,6 +97,7 @@ static int _get_psk( char * packet,
             strcpy( nceKey->Psk, p );
         }
 
+        NceOSLogInfo( "DTLS Credentials Recieved.\n" );
         return NCE_SDK_SUCCESS;
     }
 }
@@ -173,9 +174,9 @@ static int _os_coap_onboard( os_network_ops_t * osNetwork,
 
     /*  0x3d : 0011 -> Opt. delta (3)
      *          1101 -> Opt. Length (13)
-     *  0x07 : Opt. Length Extended (7) for a total length of 20 "coap.os.1nce.com"
+     *  0x03 : Opt. Length Extended (3) for a total length of 16 "coap.os.1nce.com"
      */
-    static const unsigned char uri_host_option[] = { 0x3d, 0x07 };
+    static const unsigned char uri_host_option[] = { 0x3d, 0x03 };
 
     /*0x89 : 1000 -> Opt. delta (8)
      *          1001 -> Opt. Length (9) "bootstrap"
@@ -293,7 +294,7 @@ int os_energy_save( char * packet,
 
         memcpy( packet + location, &e.value.bytes, e.template_length );
         location += e.template_length;
-        NceOSLogError( "location %d.\n", location );
+        NceOSLogDebug( "location %d.\n", location );
     }
 
     va_end( ap );

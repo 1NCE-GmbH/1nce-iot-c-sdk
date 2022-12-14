@@ -17,7 +17,7 @@ config NCE_DEVICE_AUTHENTICATOR
 
 config NCE_ENERGY_SAVER
 	bool "Enable 1NCE Energy Saver"
-	default y
+	default n
 	help 
 		use 1nce energy saver to optimize payload size.
 

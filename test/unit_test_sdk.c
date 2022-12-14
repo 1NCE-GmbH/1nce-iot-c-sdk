@@ -1,13 +1,13 @@
 #include "unity.h"
+#include <stdint.h>
 #include "nce_iot_c_sdk.h"
 
 /* Sample socket ID */
-#define SAMPLE_TLS_SOCKET    0
+#define SAMPLE_UDP_SOCKET    0
 
 /* Sample responses */
-char SAMPLE_RESPONSE_SUCCESS[] = "Express\r\n\r\npreSharedKey,KEY,clientIdentity,ID";
-char SAMPLE_RESPONSE_FAILURE[] = "Express\r\n\r\nUnauthorized";
-
+char SAMPLE_RESPONSE_SUCCESS[] = "***89*****,ID,PSK";
+char SAMPLE_RESPONSE_FAILURE[] =  {0x50, 0x84, 0x8A, 0x8B};;
 
 /* Sample Network definitions */
 struct OSNetwork
@@ -20,28 +20,28 @@ struct OSNetwork xOSNetwork = { .os_socket = 0 };
 DtlsKey_t nceKey = { 0 };
 
 /**
- * @brief Mocked tls connect returning a socket id.
+ * @brief Mocked udp connect returning a socket id.
  */
-int tls_connect_mock_success( OSNetwork_t osnetwork,
+int udp_connect_mock_success( OSNetwork_t osnetwork,
                               OSEndPoint_t nce_oboarding )
 {
-    osnetwork->os_socket = SAMPLE_TLS_SOCKET;
+    osnetwork->os_socket = SAMPLE_UDP_SOCKET;
     return 0;
 }
 
 /**
- * @brief Mocked tls connect returning an error.
+ * @brief Mocked udp connect returning an error.
  */
-int tls_connect_mock_failure( OSNetwork_t osnetwork,
+int udp_connect_mock_failure( OSNetwork_t osnetwork,
                               OSEndPoint_t nce_oboarding )
 {
     return -1;
 }
 
 /**
- * @brief Mocked tls send returning the number of bytes to be sent.
+ * @brief Mocked udp send returning the number of bytes to be sent.
  */
-int tls_send_mock( OSNetwork_t osnetwork,
+int udp_send_mock( OSNetwork_t osnetwork,
                    void * pBuffer,
                    size_t bytesToSend )
 {
@@ -49,9 +49,9 @@ int tls_send_mock( OSNetwork_t osnetwork,
 }
 
 /**
- * @brief Mocked tls recv returning SUCCESS response from the server.
+ * @brief Mocked udp recv returning SUCCESS response from the server.
  */
-int tls_recv_mock_success( OSNetwork_t osnetwork,
+int udp_recv_mock_success( OSNetwork_t osnetwork,
                            void * pBuffer,
                            size_t bytesToRecv )
 {
@@ -61,9 +61,9 @@ int tls_recv_mock_success( OSNetwork_t osnetwork,
 }
 
 /**
- * @brief Mocked tls recv returning FAILURE response from the server.
+ * @brief Mocked udp recv returning FAILURE response from the server.
  */
-int tls_recv_mock_failure( OSNetwork_t osnetwork,
+int udp_recv_mock_failure( OSNetwork_t osnetwork,
                            void * pBuffer,
                            size_t bytesToRecv )
 {
@@ -74,9 +74,9 @@ int tls_recv_mock_failure( OSNetwork_t osnetwork,
 
 
 /**
- * @brief Mocked tls disconnect returning success.
+ * @brief Mocked udp disconnect returning success.
  */
-int tls_disconnect_mock( OSNetwork_t osnetwork )
+int udp_disconnect_mock( OSNetwork_t osnetwork )
 {
     return 0;
 }
@@ -99,10 +99,10 @@ void test_os_auth_success_response( void )
     os_network_ops_t osNetwork =
     {
         .os_socket             = &xOSNetwork,
-        .nce_os_tls_connect    = tls_connect_mock_success,
-        .nce_os_tls_send       = tls_send_mock,
-        .nce_os_tls_recv       = tls_recv_mock_success,
-        .nce_os_tls_disconnect = tls_disconnect_mock
+        .nce_os_udp_connect    = udp_connect_mock_success,
+        .nce_os_udp_send       = udp_send_mock,
+        .nce_os_udp_recv       = udp_recv_mock_success,
+        .nce_os_udp_disconnect = udp_disconnect_mock
     };
 
     TEST_ASSERT_EQUAL_INT( os_auth( &osNetwork, &nceKey ), NCE_SDK_SUCCESS );
@@ -116,10 +116,10 @@ void test_os_auth_connect_failure( void )
     os_network_ops_t osNetwork =
     {
         .os_socket             = &xOSNetwork,
-        .nce_os_tls_connect    = tls_connect_mock_failure,
-        .nce_os_tls_send       = tls_send_mock,
-        .nce_os_tls_recv       = tls_recv_mock_failure,
-        .nce_os_tls_disconnect = tls_disconnect_mock
+        .nce_os_udp_connect    = udp_connect_mock_failure,
+        .nce_os_udp_send       = udp_send_mock,
+        .nce_os_udp_recv       = udp_recv_mock_failure,
+        .nce_os_udp_disconnect = udp_disconnect_mock
     };
 
     TEST_ASSERT_EQUAL_INT( os_auth( &osNetwork, &nceKey ), NCE_SDK_CONNECT_ERROR );
@@ -133,10 +133,10 @@ void test_os_auth_failure_response( void )
     os_network_ops_t osNetwork =
     {
         .os_socket             = &xOSNetwork,
-        .nce_os_tls_connect    = tls_connect_mock_success,
-        .nce_os_tls_send       = tls_send_mock,
-        .nce_os_tls_recv       = tls_recv_mock_failure,
-        .nce_os_tls_disconnect = tls_disconnect_mock
+        .nce_os_udp_connect    = udp_connect_mock_success,
+        .nce_os_udp_send       = udp_send_mock,
+        .nce_os_udp_recv       = udp_recv_mock_failure,
+        .nce_os_udp_disconnect = udp_disconnect_mock
     };
 
     TEST_ASSERT_EQUAL_INT( os_auth( &osNetwork, &nceKey ), NCE_SDK_PARSING_ERROR );
@@ -161,11 +161,11 @@ void test_os_energy_save_success( void )
 }
 
 /**
- * @brief Test 5 ( invalid binary conversion - the provided string size is not equal to the template length - ).
+ * @brief Test 5 ( invalid binary conversion - the provided int can't be stored in the selected template length - ).
  */
 void test_os_energy_save_failure( void )
 {
-    Element2byte_gen_t software_version = { .type = E_STRING, .value.s = "1.1", .template_length = 5 };
+    Element2byte_gen_t software_version = { .type = E_INTEGER, .value.i = 128 , .template_length = 1 };
 
     uint8_t selector = 1;
     char pcTransmittedString[ 50 ];
@@ -174,3 +174,4 @@ void test_os_energy_save_failure( void )
 
     TEST_ASSERT_EQUAL_INT( os_energy_save( pcTransmittedString, selector, 2, software_version ), NCE_SDK_BINARY_PAYLOAD_ERROR );
 }
+

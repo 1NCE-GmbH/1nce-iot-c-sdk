@@ -21,9 +21,13 @@ config NCE_ENERGY_SAVER
 	help 
 		use 1nce energy saver to optimize payload size.
 
-config NCE_SDK_CONNECT_ATTEMPTS
-	int "Max connection attempts to 1NCE server"
+config NCE_SDK_ATTEMPTS
+	int "Max Onboarding attempts"
 	default 5
+
+config NCE_SDK_MAX_STRING_SIZE
+	int "Max string size in the payload before conversion"
+	default 50
 	
 
 module = NCE_SDK

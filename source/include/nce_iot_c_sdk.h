@@ -36,7 +36,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdarg.h>
-#include "tls_interface.h"
+#include "udp_interface.h"
 
 /**
  * @brief definition of return codes.
@@ -55,9 +55,9 @@ enum
 #ifndef __ZEPHYR__
 
 /**
- * @brief the maximum number of connection attempts to 1NCE OS server.
+ * @brief the maximum number of onboarding attempts.
  */
-    #define NCE_SDK_CONNECT_ATTEMPTS    5
+    #define NCE_SDK_ATTEMPTS    5
 
 /**
  * @brief Enable 1NCE Device Authenticator.
@@ -69,6 +69,10 @@ enum
  */
     #define  NCE_ENERGY_SAVER
 
+/**
+ * @brief the maximum string size in the payload before conversion.
+ */
+    #define NCE_SDK_MAX_STRING_SIZE    50
 #endif /* ifndef __ZEPHYR__ */
 
 
@@ -96,26 +100,15 @@ typedef struct DtlsKey
  */
 static const OSEndPoint_t NceOnboard =
 {
-    .host = "device.connectivity-suite.cloud",
-    .port = 443
+    .host = "coap.os.1nce.com",
+    .port = 5683
 };
 
-/**
- * @brief Connect to 1NCE server with reconnection retries.
- *
- * If connection fails, retry is attempted after a timeout.
- * 1NCE endpoint require TLS Connection
- *
- * @param[in] osNetwork: tls interface object.
- *
- * @return The status of the final connection attempt.
- */
-int os_onboard( os_network_ops_t * osNetwork );
 
 /**
- * @brief Request a response from 1nce endpoint
+ * @brief Communicate with 1NCE Device Authenticator to get DTLS credentials
  *
- * @param[in] osNetwork: TLS interface object.
+ * @param[in] osNetwork: UDP interface object.
  * @param[in] nceKey: new DTLS credential required.
  *
  * @return The status of the onboarding.
@@ -155,11 +148,11 @@ typedef struct Element_Gen
      */
     union E_Value_gen
     {
-        char c;                     /**< if the variable is character */
-        float f;                    /**< if the variable is float */
-        int i;                      /**< if the variable is integer */
-        char s[ 500 ];              /**< if the variable is string */
-        unsigned char bytes[ 500 ]; /**< for returning bytes */
+        char c;                                /**< if the variable is character */
+        float f;                               /**< if the variable is float */
+        int i;                                 /**< if the variable is integer */
+        char s[ NCE_SDK_MAX_STRING_SIZE ];     /**< if the variable is string */
+        char bytes[ NCE_SDK_MAX_STRING_SIZE ]; /**< for returning bytes */
     }
 
     /**

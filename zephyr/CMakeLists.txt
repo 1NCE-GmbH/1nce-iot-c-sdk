@@ -14,4 +14,9 @@ zephyr_library_sources(
 zephyr_compile_definitions_ifdef(CONFIG_NCE_DEVICE_AUTHENTICATOR NCE_DEVICE_AUTHENTICATOR)
 zephyr_compile_definitions_ifdef(CONFIG_NCE_ENERGY_SAVER NCE_ENERGY_SAVER)
 zephyr_compile_definitions(
-    NCE_SDK_CONNECT_ATTEMPTS=${CONFIG_NCE_SDK_CONNECT_ATTEMPTS})
+    NCE_SDK_ATTEMPTS=${CONFIG_NCE_SDK_ATTEMPTS})
+zephyr_compile_definitions(
+    NCE_SDK_MAX_STRING_SIZE=${CONFIG_NCE_SDK_MAX_STRING_SIZE})
+    
+
+    

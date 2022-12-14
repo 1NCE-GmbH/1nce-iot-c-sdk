@@ -1,10 +1,10 @@
 /**
- * @file tls_interface.h
- * @brief TLS interface definitions to send and receive data over the
- * network via TLS.
+ * @file udp_interface.h
+ * @brief UDP interface definitions to send and receive data over the
+ * network via UDP.
  */
-#ifndef TLS_INTERFACE_H_
-#define TLS_INTERFACE_H_
+#ifndef UDP_INTERFACE_H_
+#define UDP_INTERFACE_H_
 
 /**
  * @brief 1NCE onboarding endpoint.
@@ -53,7 +53,7 @@ struct os_network_ops
     OSNetwork_t os_socket;
 
     /**
-     * @brief Tls interface for connect to server via tls.
+     * @brief UDP interface for connecting to 1NCE server.
      *
      *
      * @param[in] osnetwork Implementation-defined network socket.
@@ -61,14 +61,14 @@ struct os_network_ops
      *
      * @return @return The status of the connection.
      */
-    int (* nce_os_tls_connect)( OSNetwork_t osnetwork,
+    int (* nce_os_udp_connect)( OSNetwork_t osnetwork,
                                 OSEndPoint_t nce_oboarding );
 
     /**
-     * @brief Sends data over an established TLS connection.
+     * @brief Sends data over an established UDP connection.
      *
      *
-     * @param[in] pNetworkContext The network context.
+     * @param[in] OSNetwork_t Implementation-defined network socket.
      * @param[in] pBuffer Buffer containing the bytes to send.
      * @param[in] bytesToSend Number of bytes to send from the buffer.
      *
@@ -76,12 +76,12 @@ struct os_network_ops
      * 0 if the socket times out without sending any bytes;
      * else a negative value to represent error.
      */
-    int (* nce_os_tls_send)( OSNetwork_t osnetwork,
+    int (* nce_os_udp_send)( OSNetwork_t osnetwork,
                              void * pBuffer,
                              size_t bytesToSend );
 
     /**
-     * @brief Receives data from an established TLS connection.
+     * @brief Receives data from an established UDP connection.
      *
      * @param[in] osnetwork Implementation-defined network socket.
      * @param[out] pBuffer Buffer to receive bytes into.
@@ -91,20 +91,20 @@ struct os_network_ops
      * 0 if the socket times out without reading any bytes;
      * negative value on error.
      */
-    int (* nce_os_tls_recv)( OSNetwork_t osnetwork,
+    int (* nce_os_udp_recv)( OSNetwork_t osnetwork,
                              void * pBuffer,
                              size_t bytesToRecv );
 
     /**
-     * @brief Gracefully disconnect an established TLS connection.
+     * @brief Gracefully disconnect an established UDP connection.
      *
      * @param[in] osnetwork Implementation-defined network socket.
      */
-    int (* nce_os_tls_disconnect)( OSNetwork_t osnetwork );
+    int (* nce_os_udp_disconnect)( OSNetwork_t osnetwork );
 };
 
 typedef struct os_network_ops os_network_ops_t;
 
 
 
-#endif /* ifndef TLS_INTERFACE_H_ */
+#endif /* ifndef UDP_INTERFACE_H_ */

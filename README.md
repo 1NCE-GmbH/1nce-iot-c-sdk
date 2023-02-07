@@ -162,6 +162,9 @@ The Doxygen references were created using Doxygen version 1.9.2. To generate the
 ```
 doxygen docs/doxygen/Doxyfile
 ```
+## Asking for Help
+
+The most effective communication with our team is through GitHub. Simply create a [new issue](https://github.com/1NCE-GmbH/1nce-iot-c-sdk/issues/new/choose) and select from a range of templates covering bug reports, feature requests, documentation issue, or Gerneral Question.
 
 ## Contributing
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for information on contributing

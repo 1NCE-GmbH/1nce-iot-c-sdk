@@ -99,7 +99,7 @@ General documentation pages are written in Markdown.
 
 ##  Security issue notifications
 
-If you discover a potential security issue in this project we ask that you notify 1NCE via our email embedded@1nce.com. Please do **not** create a public github issue. We would appreciate waiting for a period before reporting it on public, to allow us to release the fix.
+If you discover a potential security issue in this project we ask that you notify 1NCE via our email cert@1nce.com. Please do **not** create a public github issue. We would appreciate waiting for a period before reporting it on public, to allow us to release the fix.
 
 
 ##  Licensing

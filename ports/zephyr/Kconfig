@@ -15,6 +15,12 @@ config NCE_DEVICE_AUTHENTICATOR
 	help 
 		use 1nce device authenticator to retrieve DTLS Security credentials.
 
+config NCE_SDK_UDP_INTERFACE
+	bool "Define a UDP interface for communication with 1NCE Endpoint"
+	default y if NCE_DEVICE_AUTHENTICATOR
+	help
+	  Build and link common code that is shared across Golioth samples.
+
 config NCE_ENERGY_SAVER
 	bool "Enable 1NCE Energy Saver"
 	default n

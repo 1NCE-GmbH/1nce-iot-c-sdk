@@ -6,7 +6,7 @@
 name: nce-sdk
 
 build:
-    cmake: zephyr
-    kconfig: zephyr/Kconfig
+    cmake: ports/zephyr
+    kconfig: ports/zephyr/Kconfig
     depends:
     - nrfxlib

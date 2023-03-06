@@ -31,7 +31,7 @@ class QuickStart(WestCommand):
                 cmd = cmd + "-DCONFIG_NCE_ENERGY_SAVER=y"
                 log.inf('1NCE Energy Saver is Enabled')
             subprocess.run(cmd,shell=True) 
-            subprocess.run("west flash",shell=True)
+            subprocess.run("west flash --build-dir build_coap_demo",shell=True)
         elif ( (args.protocol is not None and args.protocol.lower() == "udp") ):
             log.inf('Building 1NCE UDP Demo')
             cmd = cmd + "nce-blueprint/nce_udp_demo --build-dir build_udp_demo  "
@@ -39,12 +39,12 @@ class QuickStart(WestCommand):
                 cmd = cmd + "-DCONFIG_NCE_ENERGY_SAVER=y"
                 log.inf('1NCE Energy Saver is Enabled')
             subprocess.run(cmd,shell=True) 
-            subprocess.run("west flash",shell=True)
+            subprocess.run("west flash --build-dir build_udp_demo",shell=True)
         elif ( (args.protocol is not None and args.protocol.lower() == "lwm2m") ):
             log.inf('Building 1NCE LwM2M Demo')
             cmd = cmd + "nce-blueprint/nce_lwm2m_demo --build-dir build_lwm2m_demo  "
             subprocess.run(cmd,shell=True) 
-            subprocess.run("west flash",shell=True)
+            subprocess.run("west flash --build-dir build_lwm2m_demo",shell=True)
         else :
             log.err('Unsupported argument')
 

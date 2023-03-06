@@ -2,7 +2,7 @@
  * @file udp_interface_zephyr.c
  * @brief Implements a UDP interface for ZEPHYR OS.
  * @author  Hatim Jamali & Mohamed Abdelmaksoud
- * @date 01 Sep 2022
+ * @date 01 September 2022
  */
 
 

@@ -42,7 +42,36 @@ Given a version number MAJOR.MINOR.PATCH, increment the:
 * MINOR version when you add functionality in a backward-compatible manner,
 * PATCH version when you make backward-compatible bug fixes.
 
-## Getting started 
+## Quick starting with Nordic nRF9160 Development Kit & Zephyr RTOS
+1NCE IoT C SDK can be imported as a Zephyr module which is integrated with [nRF Connect SDK](https://www.nordicsemi.com/Products/Development-software/nrf-connect-sdk).
+
+The following commands will import 1NCE IoT C SDK, Nordic nRF Connect SDK and [1NCE Zephyr blueprint](https://github.com/1NCE-GmbH/blueprint-zephyr) which includes CoAP, UDP & LwM2M Demos. 
+```
+west init -m https://github.com/1NCE-GmbH/1nce-iot-c-sdk
+west update
+```
+Then, using the quickstart command, you can directly build and flash the demos to a connected [nRF9160 Development Kit](https://www.nordicsemi.com/Products/Development-hardware/nrf9160-dk). 
+
+The Default demo establishes a secure connection to 1NCE endpoint via CoAP after receiving DTLS credentials from the Device Authenticator.
+```
+west quickstart
+```
+The command can also be used to run udp and lwm2m demos and to enable energy saving.
+
+```
+usage: west quickstart [-h] [-p PROTOCOL] [-e ENERGYSAVING]
+
+Build and flash CoAP (With DTLS), LwM2M or UDP Demos, the payload reduction (using 1NCE Energy saver) can also be enabled.
+
+options:
+  -h, --help            show this help message and exit
+  -p PROTOCOL, --protocol PROTOCOL
+                        Select the protocol: coap (Default), lwm2m or udp
+  -e ENERGYSAVING, --energysaving ENERGYSAVING
+                        Set to "y" to enable energy saver
+```
+
+## Generic Getting started guide
 
 **This section shows you:**
 
@@ -162,9 +191,6 @@ The Doxygen references were created using Doxygen version 1.9.2. To generate the
 ```
 doxygen docs/doxygen/Doxyfile
 ```
-## Asking for Help
-
-The most effective communication with our team is through GitHub. Simply create a [new issue](https://github.com/1NCE-GmbH/1nce-iot-c-sdk/issues/new/choose) and select from a range of templates covering bug reports, feature requests, documentation issue, or Gerneral Question.
 
 ## Contributing
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for information on contributing

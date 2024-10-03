@@ -29,10 +29,21 @@
  * @date 01 Mar 2022
  */
 
+#ifdef __ZEPHYR__
+/*
+ * Ensure 'strtok_r' is available even with -std=c99.
+ * see https://github.com/zephyrproject-rtos/zephyr/issues/68278
+ */
+#if !defined(_POSIX_C_SOURCE)
+#define _POSIX_C_SOURCE 200809L
+#endif
+#endif /* ifdef  __ZEPHYR__ */
+
 #include "nce_iot_c_sdk.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 #include "log_interface.h"
 
 #ifdef __ZEPHYR__
@@ -73,7 +84,8 @@ static int _get_psk( char * packet,
     }
     else
     {
-        char * p = strtok( resp, "," );
+        char *context;
+        char *p = strtok_r(resp, ",", &context);
 
         if( p == NULL )
         {
@@ -85,7 +97,7 @@ static int _get_psk( char * packet,
             strcpy( nceKey->PskIdentity, p );
         }
 
-        p = strtok( NULL, "," );
+        p = strtok_r(NULL, ",", &context);
 
         if( p == NULL )
         {

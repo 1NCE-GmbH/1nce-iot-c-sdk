@@ -36,8 +36,8 @@ int nce_os_udp_connect( OSNetwork_t osnetwork,
         .ai_socktype = SOCK_DGRAM
     };
 
-    err = getaddrinfo( nce_oboarding.host,
-                       NULL, &hints, &addr );
+    err = zsock_getaddrinfo ( nce_oboarding.host,
+                              NULL, &hints, &addr );
 
     NceOSLogDebug( "getaddrinfo status: %d\n", err );
 

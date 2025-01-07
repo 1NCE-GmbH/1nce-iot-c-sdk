@@ -35,6 +35,10 @@ The Energy Saver aims to minimize the payload size sent from the device to a sim
 
  Check  [1NCE Developer Hub (Energy Saver)](https://help.1nce.com/dev-hub/docs/1nce-os-energy-saver) for further explantion of the translation template creation.
 
+### Memfault Interface using 1NCE CoAP Proxy (Currently available for Zephyr RTOS)
+This interface can be used to send Memfault data chunks to 1NCE CoAP Proxy. 
+Once received by the proxy, the chunks are forwarded to the Memfault API in the project that is associated with the 1NCE OS Memfault plugin.
+
 ## Versioning
 1NCE IoT C SDK releases will follow a [Semantic versioning](https://en.wikipedia.org/wiki/Software_versioning#Semantic_versioning)
 Given a version number MAJOR.MINOR.PATCH, increment the:
@@ -124,7 +128,7 @@ To implement your functions, we recommend to see our Blueprints
 ### Step 3: Integrate SDK in your Application
 
 1NCE SDK is simple to integrate in every Embedded App written with C, To begin, you need to define an object type OSNetwork_t and affect to their variable the network socket and implemented functions as shown in the example below.
-
+(Note: This is not required for Zephyr Memfault interface, as the network interface there is internally defined)
 ```
 OSNetwork_t xOSNetwork= { 0 };
 os_network_ops_t osNetwork={
@@ -182,6 +186,39 @@ Complete the following  macros  in ```log_interface.h```
 #define NceOSLogWarn( format, ... )
 ```
 If you are using FreeRTOS you can just use the macro  ```#define FREERTOS```
+
+#### 4. Memfault Interface (Currently available for Zephyr RTOS)
+To enable the Memfault interface, configure it in the `prj.conf` file of your Zephyr application:
+```
+CONFIG_NCE_MEMFAULT_INTERFACE=y
+```
+Once enabled, you can call the following function to send data to Memfault:
+
+```
+int err = os_memfault_send();
+```
+The function uses Zephyr Memfault SDK to collect diagnostic data, which it then transmits to the 1NCE OS CoAP Proxy using a predefined CoAP interface.
+
+The configuration options for Memfault interface are:
+
+`CONFIG_NCE_SDK_MEMFAULT_BUFFER_SIZE_BYTES` The maximum size of the Memfault data buffer (to be sent in a single CoAP packet payload). The default size is 512 bytes.
+
+`CONFIG_NCE_SDK_MEMFAULT_PROXY_URI` The Proxy URI of Memfault Endpoint.Set by default to `"https://chunks.memfault.com/api/v0/chunks/:iccid:"`, the ICCID is set by the CoAP Proxy.
+
+`CONFIG_NCE_SDK_MEMFAULT_ATTEMPTS` The maximum number of attempts for sending Memfault data. Default is 3 attempts.
+
+`CONFIG_NCE_SDK_MEMFAULT_ATTEMPT_DELAY_SECONDS` Delay between Memfault sending attempts (seconds). Default is 5 seconds.
+
+`CONFIG_NCE_SDK_ENABLE_DTLS` Enable DTLS for COAP communication with the 1NCE endpoints. 
+
+`CONFIG_NCE_SDK_SEND_TIMEOUT_SECONDS` Network send Timeout (seconds). Default is 10 seconds.
+
+`CONFIG_NCE_SDK_RECV_TIMEOUT_SECONDS` Network receive Timeout (seconds). Default is 10 seconds.
+
+`CONFIG_NCE_SDK_DTLS_HANDSHAKE_TIMEOUT_SECONDS` DTLS Handshake Timeout (seconds). Default is 15 seconds.Accepted values for the option are: 1, 3, 7, 15, 31, 63, 123.
+
+`CONFIG_NCE_SDK_DTLS_SECURITY_TAG` The DTLS security tag for communication with the 1NCE CoAP server. 
+The tag should contain a valid Identity and PSK for DTLS communication. These credentials can be obtained using `os_auth` function and stored in the modem.
 
 ### Step 4: Run your Application
 Run your code in ISO C90

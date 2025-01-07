@@ -33,7 +33,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdint.h>
-#include "log_interface.h"
+
+#ifdef ARDUINO
+    #include "interface/log_interface.h"
+#else
+    #include "log_interface.h"
+#endif /* ifdef ARDUINO */
 
 #ifdef __ZEPHYR__
 LOG_MODULE_REGISTER( NCE_SDK, CONFIG_NCE_SDK_LOG_LEVEL );

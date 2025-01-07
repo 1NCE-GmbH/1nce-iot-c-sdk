@@ -21,9 +21,15 @@ config NCE_ENERGY_SAVER
 	help 
 		use 1nce energy saver to optimize payload size.
 
+config NCE_MEMFAULT_INTERFACE
+	bool "Enable Memfault interface"
+	default n
+	help
+	  Enable the sending of Memfault data through 1NCE CoAP proxy.
+
 config NCE_SDK_COAP_INTERFACE
 	bool "Enable CoAP interface"
-	default y
+	default y if NCE_MEMFAULT_INTERFACE
 	help
 	  Enable CoAP interface for communication with the 1NCE endpoints.
 
@@ -31,6 +37,7 @@ config NCE_SDK_NETWORK_INTERFACE
 	bool "Enable Network interface"
 	default y if NCE_DEVICE_AUTHENTICATOR
 	default y if NCE_SDK_COAP_INTERFACE
+	default y if NCE_MEMFAULT_INTERFACE
 	help
 	  Enable Network interface for communication with the 1NCE endpoints.
 
@@ -60,6 +67,54 @@ config NCE_SDK_RECV_TIMEOUT_SECONDS
     depends on NCE_SDK_NETWORK_INTERFACE
     help
         Set the timeout for Network receive in seconds.
+
+if NCE_MEMFAULT_INTERFACE
+
+config NCE_SDK_ENABLE_DTLS
+	bool "Enable DTLS for the CoAP interface"
+	default n
+	help
+	  Enable DTLS for CoAP communication with the 1NCE endpoints.
+
+config NCE_SDK_MEMFAULT_PROXY_URI
+	string "Proxy URI for Memfault"
+	default "https://chunks.memfault.com/api/v0/chunks/:iccid:"
+	help
+	  The Proxy URI of Memfault Endpoint.
+
+config NCE_SDK_MEMFAULT_BUFFER_SIZE
+	int "Max buffer size for Memfault chunks"
+	default 512
+	help
+		Set the maximum buffer size for Memfault data buffer (that will be send in a single CoAP packet).
+
+config NCE_SDK_MEMFAULT_ATTEMPTS
+	int "Max Memfault attempts"
+	default 3
+	help
+		Set the maximum number of Memfault sending attempts.
+
+config NCE_SDK_MEMFAULT_ATTEMPT_DELAY_SECONDS
+    int "Delay between Memfault sending attempts (seconds)"
+    default 5
+    help
+        Set the delay (in seconds) between consecutive Memfault sending attempts.
+
+endif
+
+config NCE_SDK_DTLS_SECURITY_TAG
+	int "DTLS security tag to be used when sending data to 1NCE CoAP server"
+	default -1
+	depends on NCE_SDK_ENABLE_DTLS
+	help
+		Set the DTLS security tag for secure 1NCE CoAP server communication, this tag should contain a valid PSK and Identity.
+
+config NCE_SDK_DTLS_HANDSHAKE_TIMEOUT_SECONDS
+    int "DTLS Handshake Timeout (seconds)"
+    default 15
+    depends on NCE_SDK_ENABLE_DTLS
+    help
+        Set the timeout for the DTLS handshake in seconds, Accepted values for the option are: 1, 3, 7, 15, 31, 63, 123.
 
 module = NCE_SDK
 module-str = NCE_SDK

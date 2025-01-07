@@ -25,6 +25,20 @@ void vLoggingPrintf( const char * pcFormat,
     #define NceOSLogError( ... )    LOG_ERR( __VA_ARGS__ )
     #define NceOSLogWarn( ... )     LOG_WRN( __VA_ARGS__ )
 
+#elif defined( ARDUINO )
+
+/**
+ *  @brief implementation of logging macros for Arduino.
+ */
+    #define NceOSLogInfo( ... )         printf( __VA_ARGS__ )
+    #define NceOSLogError( ... )        printf( __VA_ARGS__ )
+    #define NceOSLogWarn( ... )         printf( __VA_ARGS__ )
+    #ifdef NCE_SDK_LOG_LEVEL_DEBUG
+        #define NceOSLogDebug( ... )    printf( __VA_ARGS__ )
+    #else
+        #define NceOSLogDebug( format, ... )
+    #endif
+
 #else /* ifdef FREERTOS */
 
 /**

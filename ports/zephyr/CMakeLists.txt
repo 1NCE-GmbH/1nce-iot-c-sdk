@@ -1,12 +1,10 @@
 #
-# Copyright (c) 2022 1NCE
+# Copyright (c) 2024 1NCE
 # 1NCE IoT C SDK (ZEPHYR OS Module)
 #
 
 
 set(NCE_SDK_ROOT ../..)
-
-# set(NCE_SDK_DIR ${ZEPHYR_CURRENT_MODULE_DIR})
 
 zephyr_library()
 zephyr_include_directories(${NCE_SDK_ROOT}/source/include)
@@ -22,6 +20,7 @@ zephyr_compile_definitions(
 zephyr_compile_definitions(
     NCE_SDK_MAX_STRING_SIZE=${CONFIG_NCE_SDK_MAX_STRING_SIZE})
 
-
-zephyr_library_sources_ifdef(CONFIG_NCE_SDK_UDP_INTERFACE udp_interface_zephyr.c)
+zephyr_library_sources_ifdef(CONFIG_NCE_SDK_NETWORK_INTERFACE network_interface_zephyr.c)
+zephyr_library_sources_ifdef(CONFIG_NCE_SDK_COAP_INTERFACE coap_interface_zephyr.c)
+zephyr_library_sources_ifdef(CONFIG_NCE_SDK_COAP_INTERFACE coap_interface_zephyr_utils.c)
 zephyr_include_directories(include)

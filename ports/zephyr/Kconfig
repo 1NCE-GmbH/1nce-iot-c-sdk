@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2022 1NCE
+# Copyright (c) 2024 1NCE
 # 1NCE IoT C SDK (ZEPHYR OS Module)
 #
 
@@ -15,26 +15,51 @@ config NCE_DEVICE_AUTHENTICATOR
 	help 
 		use 1nce device authenticator to retrieve DTLS Security credentials.
 
-config NCE_SDK_UDP_INTERFACE
-	bool "Define a UDP interface for communication with 1NCE Endpoint"
-	default y if NCE_DEVICE_AUTHENTICATOR
-	help
-	  Build and link common code that is shared across Golioth samples.
-
 config NCE_ENERGY_SAVER
 	bool "Enable 1NCE Energy Saver"
 	default n
 	help 
 		use 1nce energy saver to optimize payload size.
 
+config NCE_SDK_COAP_INTERFACE
+	bool "Enable CoAP interface"
+	default y
+	help
+	  Enable CoAP interface for communication with the 1NCE endpoints.
+
+config NCE_SDK_NETWORK_INTERFACE
+	bool "Enable Network interface"
+	default y if NCE_DEVICE_AUTHENTICATOR
+	default y if NCE_SDK_COAP_INTERFACE
+	help
+	  Enable Network interface for communication with the 1NCE endpoints.
+
 config NCE_SDK_ATTEMPTS
 	int "Max Onboarding attempts"
 	default 5
+	help
+		Set the maximum number of onboarding attempts.
+	  
 
 config NCE_SDK_MAX_STRING_SIZE
-	int "Max string size in the payload before conversion"
+	int "Max payload string size"
 	default 50
-	
+	help
+		Set the maximum payload string size for energy saver payload (before conversion).
+
+config NCE_SDK_SEND_TIMEOUT_SECONDS
+    int "Network send Timeout (seconds)"
+    default 10
+    depends on NCE_SDK_NETWORK_INTERFACE
+    help
+        Set the timeout for Network send in seconds.
+
+config NCE_SDK_RECV_TIMEOUT_SECONDS
+    int "Network receive Timeout (seconds)"
+    default 10
+    depends on NCE_SDK_NETWORK_INTERFACE
+    help
+        Set the timeout for Network receive in seconds.
 
 module = NCE_SDK
 module-str = NCE_SDK

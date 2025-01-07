@@ -31,52 +31,63 @@
  */
 
 #ifndef NCE_IOT_C_SDK_H_
-#define NCE_IOT_C_SDK_H_
+    #define NCE_IOT_C_SDK_H_
+
+    #ifdef __cplusplus
+extern "C" {
+    #endif
+
 /* Standard includes. */
-#include <string.h>
-#include <stdbool.h>
-#include <stdarg.h>
-#include "udp_interface.h"
+    #include <string.h>
+    #include <stdbool.h>
+    #include <stdarg.h>
+
+    #ifdef ARDUINO
+        #include "interface/udp_interface.h"
+    #else
+        #include "udp_interface.h"
+    #endif /* ifdef ARDUINO */
 
 /**
  * @brief definition of return codes.
  */
 enum
 {
-    NCE_SDK_SUCCESS = 0,              /**< The operation was successful. */
-    NCE_SDK_CONNECT_ERROR = -1,       /**< Connection error. */
-    NCE_SDK_SEND_ERROR = -2,          /**< Packet sending error. */
-    NCE_SDK_RECEIVE_ERROR = -3,       /**< Packet reception error. */
-    NCE_SDK_PARSING_ERROR = -4,       /**< Response parsing error. */
-    NCE_SDK_BINARY_PAYLOAD_ERROR = -5 /**< Binary payload conversion error. */
+    NCE_SDK_SUCCESS = 0,               /**< The operation was successful. */
+    NCE_SDK_CONNECT_ERROR = -1,        /**< Generic Connection error. */
+    NCE_SDK_DTLS_CONNECT_ERROR = -2,   /**< DTLS Connection error. */
+    NCE_SDK_SEND_ERROR = -3,           /**< Packet sending error. */
+    NCE_SDK_RECEIVE_ERROR = -4,        /**< Packet reception error. */
+    NCE_SDK_PARSING_ERROR = -5,        /**< Response parsing error. */
+    NCE_SDK_BINARY_PAYLOAD_ERROR = -6, /**< Binary payload conversion error. */
+    NCE_SDK_SERVER_RESPONSE_ERROR = -7 /**< Server responded with an error (e.g., HTTP 404, 500). */
 };
 
-
-#ifndef __ZEPHYR__
+    #ifndef __ZEPHYR__
 
 /**
  * @brief the maximum number of onboarding attempts.
  */
-    #define NCE_SDK_ATTEMPTS    5
+        #define NCE_SDK_ATTEMPTS    5
 
 /**
  * @brief Enable 1NCE Device Authenticator.
  */
-    #define  NCE_DEVICE_AUTHENTICATOR
+        #define  NCE_DEVICE_AUTHENTICATOR
 
 /**
  * @brief Enable 1NCE Energy Saver.
  */
-    #define  NCE_ENERGY_SAVER
+        #define  NCE_ENERGY_SAVER
 
 /**
  * @brief the maximum string size in the payload before conversion.
  */
-    #define NCE_SDK_MAX_STRING_SIZE    50
-#endif /* ifndef __ZEPHYR__ */
+        #define NCE_SDK_MAX_STRING_SIZE    50
+    #endif /* ifndef __ZEPHYR__ */
 
 
-#ifdef NCE_DEVICE_AUTHENTICATOR
+    #ifdef NCE_DEVICE_AUTHENTICATOR
 
 /**
  * @brief Contains the credentials necessary for DTLS connection setup.
@@ -98,11 +109,7 @@ typedef struct DtlsKey
  * @brief 1NCE onboarding endpoint.
  * @brief 1NCE onboarding port.
  */
-static const OSEndPoint_t NceOnboard =
-{
-    .host = "coap.os.1nce.com",
-    .port = 5683
-};
+static const OSEndPoint_t NceOnboard = { "coap.os.1nce.com", 5683 };
 
 
 /**
@@ -117,9 +124,9 @@ int os_auth( os_network_ops_t * osNetwork,
              DtlsKey_t * nceKey );
 
 
-#endif /* ifdef NCE_DEVICE_AUTHENTICATOR */
+    #endif /* ifdef NCE_DEVICE_AUTHENTICATOR */
 
-#ifdef NCE_ENERGY_SAVER
+    #ifdef NCE_ENERGY_SAVER
 
 /**
  * @brief Enums representing different type of 1NCE OS variables in the message.
@@ -182,7 +189,10 @@ int os_energy_save( char * packet,
                     int num_args,
                     ... );
 
-#endif /* ifdef NCE_ENERGY_SAVER */
+    #endif /* ifdef NCE_ENERGY_SAVER */
 
+    #ifdef __cplusplus
+}
+    #endif
 
 #endif /* ifndef NCE_IOT_C_SDK_H_ */
